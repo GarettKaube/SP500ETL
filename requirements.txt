@@ -1,0 +1,7 @@
+azure-storage-file-datalake
+azure-identity
+pandas
+numpy
+tqdm
+yfinance
+beautifulsoup4
