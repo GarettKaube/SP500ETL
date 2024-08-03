@@ -19,4 +19,4 @@ jobs:
       - name: run job
         env:
             AZUREDATALAKE: ${{ secrets.AZUREDATALAKE }}
-        run: python ETL/etl.py 
+        run: python etl.py 
