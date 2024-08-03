@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: setup_env
-        uses: actions/setup-python@4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11.9"
       - name: install python packages
