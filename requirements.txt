@@ -5,3 +5,4 @@ numpy
 tqdm
 yfinance
 beautifulsoup4
+pyarrow
