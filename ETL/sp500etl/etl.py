@@ -6,6 +6,7 @@ import json
 from tqdm import tqdm
 import warnings
 import time
+import os
 
 warnings.filterwarnings('ignore')
 
@@ -25,7 +26,7 @@ class ETL:
         with open("./config/datalake.json", "r") as f:
             datalake_conf = json.load(f)
             self.dl_account = datalake_conf['account_name']
-            key = datalake_conf["account_key"]
+            key = os.environ["AZUREDATALAKE"]
             self.file_system = datalake_conf["file_system"]
 
         with open("./temp/uploaded.json", "w") as f:
