@@ -39,7 +39,7 @@ def upload(file_client, parent_folder):
     n = len(glob.glob(f"{parent_folder}/*/*.parquet"))
     progress_bar = tqdm(total=n, desc=f"Uploading data from {parent_folder}")
 
-    with open("./temp/uploaded.json", "r") as f:
+    with open("./ETL/temp/uploaded.json", "r") as f:
         uploaded_list = json.load(f)['uploaded']
 
     for folder in os.listdir(parent_folder):
@@ -49,7 +49,7 @@ def upload(file_client, parent_folder):
             upload_file_to_directory(client, f"{parent_folder}/{folder}", file)
             uploaded_list.append(f"{parent_folder}/{folder}/{file}")
 
-            with open("./temp/uploaded.json", "w") as f:
+            with open("./ETL/temp/uploaded.json", "w") as f:
                 json.dump({"uploaded": uploaded_list}, f)
 
             progress_bar.update(1)

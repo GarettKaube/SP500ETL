@@ -23,13 +23,15 @@ logger2.setLevel(logging.ERROR)
 
 class ETL:
     def __init__(self, unprocessed_path, processed_path) -> None:
+        # Azure data lake gen 2 config
         with open("./config/datalake.json", "r") as f:
             datalake_conf = json.load(f)
             self.dl_account = datalake_conf['account_name']
             key = os.environ["AZUREDATALAKE"]
             self.file_system = datalake_conf["file_system"]
 
-        with open("./temp/uploaded.json", "w") as f:
+        os.makedirs("ETL/temp", exist_ok=True)
+        with open("./ETL//temp/uploaded.json", "w") as f:
             json.dump({"uploaded": []}, f)
         
         self.processed_path = processed_path
