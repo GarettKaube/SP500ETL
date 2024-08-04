@@ -6,3 +6,4 @@ tqdm
 yfinance
 beautifulsoup4
 pyarrow
+pandas_datareader

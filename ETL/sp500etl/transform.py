@@ -5,6 +5,7 @@ import yfinance as yf
 import pandas as pd
 import os
 import logging
+import glob
 
 from tqdm import tqdm
 
@@ -13,7 +14,7 @@ logger=logging.getLogger("etl")
 
 def read_sp500_data(path):
     import glob
-    files = glob.glob(f"{path}/*/*.parquet")
+    files = glob.glob(f"{path}/*/sp500*.parquet")
     dfs = [pd.read_parquet(file) for file in files]
     data = pd.concat(dfs, axis=0)
     data.index = pd.to_datetime(data.index)
@@ -55,6 +56,26 @@ def calculate_cum_return(input_path, output_path):
             index=True
         )
         progress_bar.update(1)
+
+
+def join_fama_french_data(sp500_input_path, factor_input_path, output_path):
+    sp500_data = glob.glob(f"{sp500_input_path}/*/sp500.parquet")
+    sp500_data = pd.concat([pd.read_parquet(file) for file in sp500_data])
+
+    factor_data = glob.glob(f"{factor_input_path}/*/fama-french-factors.parquet")
+    factor_data = pd.concat([pd.read_parquet(file) for file in factor_data])
+    factor_data = factor_data.resample('M').last().div(100)
+    factor_data.index.name = 'Date'
+
+    groups = sp500_data.groupby("Ticker")[["Close"]].apply(lambda x: x.pct_change().dropna())
+    joined = groups.reset_index().set_index('Date').join(factor_data)
+    
+    years = joined.index.year.unique()
+    for year in years:
+        save_data = joined.loc[f"{year}"]
+        path = f"{output_path}/{year}"
+        os.makedirs(path, exist_ok=True)
+        save_data.to_parquet(path + "/sp500_and_fama-french-factors.parquet")
 
 
 def main():

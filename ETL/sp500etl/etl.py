@@ -52,7 +52,10 @@ class ETL:
     def extract(self, retrys=1):
         try:
             logger.info(f"Starting {self.extract.__name__} process")
+            logger.info(f"Extracting S&P500 data..")
             extract_sp500_data_daily(self.unprocessed_path)
+            logger.info(f"Extracting Fama-French Five Factor data..")
+            extract_fama_french_five_factors(self.unprocessed_path)
             logger.info("Extract complete")
         except Exception as e:
             logger.exception(f"Extract failed, retrys: {retrys}", exc_info=True)
@@ -71,6 +74,12 @@ class ETL:
         logger.info("Done")
         logger.info("Reformatting S&500 data..")
         transform_sp500_data(self.unprocessed_path, self.processed_path)
+        logger.info("Creating Joined S&P500 Factor data..")
+        join_fama_french_data(
+            sp500_input_path=self.processed_path, 
+            factor_input_path=self.unprocessed_path, 
+            output_path=self.processed_path
+        )
         logger.info("Done")
         return self
 
@@ -101,6 +110,12 @@ class ETL:
 
 
 def main():
+    try:
+        from localsetup import set_datalake_creds
+        set_datalake_creds()
+    except Exception as e:
+        pass
+
     unprocessed_data = "./data/unprocessed"
     processed_data = "./data/processed"
 
@@ -108,6 +123,7 @@ def main():
     pipeline.extract()\
         .transform()\
         .load()
+    logger.info("ETL complete")
 
 
 if __name__ == "__main__":

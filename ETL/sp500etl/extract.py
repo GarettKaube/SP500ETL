@@ -6,6 +6,7 @@ import pandas as pd
 import os
 import logging
 from tqdm import tqdm
+import pandas_datareader.data as web
 
 logger=logging.getLogger("etl")
 
@@ -39,6 +40,24 @@ def extract_sp500_data_daily(out_path):
             os.makedirs(path, exist_ok=True)
             df.to_parquet(os.path.join(out_path, f"{year_}/sp500_{year_}_{month_}.parquet"), index=True)
         progress_bar.update(1)
+
+
+def extract_fama_french_five_factors(out_path):
+    """ Uses pandas_datareader.data to fetch the Fama French five
+    factor data and saves it to parquet
+    """
+    factor_data = web.DataReader('F-F_Research_Data_5_Factors_2x3', 'famafrench', start='2000')[0].drop('RF', axis=1)
+    factor_data.index = factor_data.index.to_timestamp()
+    years = factor_data.index.year.unique() 
+    for year in years:
+        save_data = factor_data.loc[f"{year}"]
+        path = f"{out_path}/{year}"
+        os.makedirs(path, exist_ok=True)
+        save_data.to_parquet(path + "/fama-french-factors.parquet")
+
+
+# factor_data = factor_data.resample('M').last().div(100)
+# factor_data.index.name = 'date'
 
 
 def main():
