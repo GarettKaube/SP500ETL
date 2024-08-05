@@ -67,8 +67,21 @@ def join_fama_french_data(sp500_input_path, factor_input_path, output_path):
     factor_data = factor_data.resample('M').last().div(100)
     factor_data.index.name = 'Date'
 
-    groups = sp500_data.groupby("Ticker")[["Close"]].apply(lambda x: x.pct_change().dropna())
-    joined = groups.reset_index().set_index('Date').join(factor_data)
+    return_dfs = []
+    for lag in [1,3,6,9,12]:
+        groups = sp500_data.groupby("Ticker")[["Close"]].apply(
+            lambda x: x.pct_change(lag)\
+            .add(1)\
+            .pow(1/lag)\
+            .sub(1)
+            )
+        groups = groups.rename({"Close": f"Return_{lag}mo"}, axis=1)
+        return_dfs.append(groups)
+    
+    returns = pd.concat(return_dfs, axis=1).reset_index()
+    joined = returns.merge(sp500_data.reset_index(), on=["Date", "Ticker"])\
+        .set_index('Date')\
+        .join(factor_data)
     
     years = joined.index.year.unique()
     for year in years:

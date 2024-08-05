@@ -34,7 +34,7 @@ def upload_file_to_directory(directory_client: DataLakeDirectoryClient, local_pa
 def upload(file_client, parent_folder):
     import glob
 
-    client = file_client.get_directory_client("data/unprocessed") if "unprocessed" in parent_folder else file_client.get_directory_client("data/processed")
+    
 
     n = len(glob.glob(f"{parent_folder}/*/*.parquet"))
     progress_bar = tqdm(total=n, desc=f"Uploading data from {parent_folder}")
@@ -45,10 +45,15 @@ def upload(file_client, parent_folder):
     for folder in os.listdir(parent_folder):
         file_client.create_directory(f"{parent_folder}/{folder}")
 
-        for file in os.listdir(f"{parent_folder}/{folder}"):
-            upload_file_to_directory(client, f"{parent_folder}/{folder}", file)
-            uploaded_list.append(f"{parent_folder}/{folder}/{file}")
+        if "unprocessed" in parent_folder:
+             dir_client = file_client.get_directory_client(f"data/unprocessed/{folder}")
+        else:
+            dir_client = file_client.get_directory_client(f"data/processed/{folder}")
 
+        for file in os.listdir(f"{parent_folder}/{folder}"):
+            upload_file_to_directory(dir_client, f"{parent_folder}/{folder}", file)
+            
+            uploaded_list.append(f"{parent_folder}/{folder}/{file}")
             with open("./ETL/temp/uploaded.json", "w") as f:
                 json.dump({"uploaded": uploaded_list}, f)
 

@@ -91,6 +91,7 @@ class ETL:
         logger.info(f"""Saving data to Datalake account {self.dl_account} to folders 
                     {self.file_system}/{self.processed_path} 
                     and {self.file_system}/{self.unprocessed_path}""")
+        
         for parent_folder in [self.processed_path, self.unprocessed_path]:
             try:
                 upload(self.file_client, parent_folder)
@@ -124,7 +125,7 @@ def main():
     pipeline = ETL(unprocessed_data, processed_data)
     pipeline.extract()\
         .transform()\
-        .load()
+        #.load()
     logger.info("ETL complete")
 
 
