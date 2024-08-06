@@ -127,7 +127,7 @@ def main():
     pipeline = ETL(unprocessed_data, processed_data)
     pipeline.extract()\
         .transform()\
-        #.load()
+        .load()
     logger.info("ETL complete")
 
 
