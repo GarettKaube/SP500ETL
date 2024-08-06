@@ -82,6 +82,8 @@ class ETL:
             factor_input_path=self.unprocessed_path, 
             output_path=self.processed_path
         )
+        logger.info("Calculating daily returns..")
+        calculate_daily_returns(self.processed_path, self.processed_path)
         logger.info("Done")
         return self
 

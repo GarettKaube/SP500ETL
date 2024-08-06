@@ -23,7 +23,7 @@ def extract_sp500_data_daily(out_path):
     start = datetime.datetime(2010,1,1)
     end = datetime.datetime.today()
 
-    data = yf.download(tickers, start=start, end=end)
+    data = yf.download(tickers, start=start, end=end, interval="1d")
     data.index = pd.to_datetime(data.index)
 
 
