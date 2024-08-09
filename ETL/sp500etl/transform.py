@@ -93,29 +93,15 @@ def calculate_cum_return(input_path, output_path):
 def join_fama_french_data(sp500_input_path, factor_input_path, output_path):
     sp500_data = glob.glob(f"{sp500_input_path}/*/sp500_2*.parquet")
     sp500_data = pd.concat([pd.read_parquet(file) for file in sp500_data])
-    sp500_data = sp500_data.groupby("Ticker").resample("M").last()\
-        .droplevel(0)
 
-    factor_data = glob.glob(f"{factor_input_path}/*/fama-french-factors.parquet")
+
+    factor_data = glob.glob(f"{factor_input_path}/*/fama-french-factors_*.parquet")
     factor_data = pd.concat([pd.read_parquet(file) for file in factor_data])
-    factor_data = factor_data.resample('M').last().div(100)
+    factor_data = factor_data.div(100)
     factor_data.index.name = 'Date'
 
-    return_dfs = []
-    for lag in [1,3,6,9,12]:
-        groups = sp500_data.groupby("Ticker")[["Close"]].apply(
-            lambda x: x.pct_change(lag)\
-            .add(1)\
-            .pow(1/lag)\
-            .sub(1)
-            )
-        groups = groups.rename({"Close": f"Return_{lag}mo"}, axis=1)
-        return_dfs.append(groups)
     
-    returns = pd.concat(return_dfs, axis=1).reset_index()
-    joined = returns.merge(sp500_data.reset_index(), on=["Date", "Ticker"])\
-        .set_index('Date')\
-        .join(factor_data)
+    joined = sp500_data.join(factor_data)
     
     years = joined.index.year.unique()
     for year in years:
