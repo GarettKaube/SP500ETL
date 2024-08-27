@@ -7,7 +7,10 @@ import os
 import logging
 from tqdm import tqdm
 import pandas_datareader.data as web
-from ETLcode.ETL.utils import save_daily_data
+try:
+    from ETLcode.ETL.utils import save_daily_data
+except ModuleNotFoundError:
+    from utils import save_daily_data
 
 logger=logging.getLogger("etl")
 
