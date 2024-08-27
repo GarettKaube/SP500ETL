@@ -1,5 +1,5 @@
-from ETLcode.ETL.extract import *
-from ETLcode.ETL.transform import *
+from extract import *
+from transform import *
 from load import *
 import logging
 import json
