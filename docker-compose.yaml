@@ -288,14 +288,5 @@ services:
       airflow-init:
         condition: service_completed_successfully
 
-  mlflow_server:
-    build:
-      context: .
-      dockerfile: Dockerfile.mlflow
-    ports:
-      - "5000:5000"
-    volumes:
-      - mlflow-data:/mlflow
 volumes:
-  mlflow-data:
   postgres-db-volume:
