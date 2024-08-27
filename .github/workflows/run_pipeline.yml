@@ -19,4 +19,6 @@ jobs:
       - name: run job
         env:
             AZUREDATALAKE: ${{ secrets.AZUREDATALAKE }}
+            DATALAKENAME: ${{ secrets.DATALAKENAME }}
+            FILESYSTEM: ${{ secrets.FILESYSTEM }}
         run: python dags/ETLcode/ETL/etl.py 
