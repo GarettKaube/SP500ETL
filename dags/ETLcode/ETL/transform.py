@@ -3,6 +3,11 @@ import os
 import logging
 import glob
 from tqdm import tqdm
+try:
+    from ETLcode.ETL.utils import save_daily_data
+except ModuleNotFoundError:
+    from utils import save_daily_data
+
 logger = logging.getLogger("etl")
 
 
@@ -32,26 +37,6 @@ def from_prices_to_returns(data, lags: list):
 
     returns = pd.concat(return_dfs, axis=1).reset_index()
     return returns
-
-
-def save_daily_data(data, output_path, out_file_name):
-    progress_bar = tqdm(
-        total=len(data.index.year.unique()),
-        desc=f"Saving data to {output_path}"
-    )
-    for year_ in data.index.year.unique():
-        path = os.path.join(output_path, f"{year_}")
-        for month_ in data.index.month.unique():
-            df = data[(data.index.year == year_) &
-                      (data.index.month == month_)]
-            os.makedirs(path, exist_ok=True)
-            df.to_parquet(
-                os.path.join(
-                    output_path,
-                    f"{year_}/{out_file_name}_{year_}_{month_}.parquet"),
-                index=True
-            )
-        progress_bar.update(1)
 
 
 def transform_sp500_data(input_path, output_path):
