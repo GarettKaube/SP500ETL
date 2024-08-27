@@ -1,5 +1,5 @@
-from ETLcode.ETL.extract import *
-from ETLcode.ETL.transform import *
+from dags.ETLcode.ETL.extract import *
+from dags.ETLcode.ETL.transform import *
 from load import *
 import logging
 import json
@@ -24,11 +24,11 @@ logger2.setLevel(logging.ERROR)
 class ETL:
     def __init__(self, unprocessed_path, processed_path) -> None:
         # Azure data lake gen 2 config
-        with open("./config/datalake.json", "r") as f:
-            datalake_conf = json.load(f)
-            self.dl_account = datalake_conf['account_name']
-            key = os.environ["AZUREDATALAKE"]
-            self.file_system = datalake_conf["file_system"]
+        
+            
+        self.dl_account = os.environ["DATALAKENAME"]
+        key = os.environ["AZUREDATALAKE"]
+        self.file_system = os.environ["FILESYSTEM"]
 
         os.makedirs("ETL/temp", exist_ok=True)
         with open("./ETL//temp/uploaded.json", "w") as f:
@@ -121,7 +121,7 @@ def main():
     pipeline = ETL(unprocessed_data, processed_data)
     pipeline.extract()\
         .transform()\
-        .load()
+        #.load()
     logger.info("ETL complete")
 
 
