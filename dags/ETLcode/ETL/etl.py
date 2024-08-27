@@ -1,5 +1,5 @@
-from dags.ETLcode.ETL.extract import *
-from dags.ETLcode.ETL.transform import *
+from ETLcode.ETL.extract import *
+from ETLcode.ETL.transform import *
 from load import *
 import logging
 import json
